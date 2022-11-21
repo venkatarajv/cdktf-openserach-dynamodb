@@ -1,0 +1,23 @@
+{
+  "language": "typescript",
+  "app": "npx ts-node main.ts",
+  "projectId": "bf294245-fe8e-4f91-9e49-d3b938431f8f",
+  "sendCrashReports": "true",
+  "terraformProviders": [{
+      "name": "aws"
+    }],
+  "terraformModules": [
+    {
+      "name": "cloudwatch",
+      "source": "./modules/cloudwatch"
+    },
+    {
+      "name": "lambda",
+      "source": "./modules/lambda"
+    }
+  ],
+  "context": {
+    "excludeStackIdFromLogicalIds": "true",
+    "allowSepCharsInLogicalIds": "true"
+  }
+}

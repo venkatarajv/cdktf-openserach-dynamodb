@@ -1,0 +1,161 @@
+{
+  "//": {
+    "metadata": {
+      "backend": "cloud",
+      "cloud": "tfc",
+      "overrides": {
+        "aws_dynamodb_table": [
+          "hash_key",
+          "lifecycle"
+        ]
+      },
+      "stackName": "oslash",
+      "version": "0.14.1"
+    },
+    "outputs": {
+      "oslash": {
+        "table_name": "table_name"
+      }
+    }
+  },
+  "data": {
+    "aws_caller_identity": {
+      "identity": {
+        "//": {
+          "metadata": {
+            "path": "oslash/identity",
+            "uniqueId": "identity"
+          }
+        }
+      }
+    },
+    "aws_region": {
+      "region": {
+        "//": {
+          "metadata": {
+            "path": "oslash/region",
+            "uniqueId": "region"
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "cloudwatch-alerts": {
+      "//": {
+        "metadata": {
+          "path": "oslash/cloudwatch-alerts",
+          "uniqueId": "cloudwatch-alerts"
+        }
+      },
+      "cpu_utilization_threshold": 70,
+      "domain_name": "${aws_opensearch_domain.opensearch.domain_name}",
+      "free_storage_space_threshold": 30,
+      "sns_topic_prefix": "oslash-",
+      "source": "./assets/local-module-cloudwatch-alerts/CED5F267CB6C430CEDB0DF17A6FC5891"
+    },
+    "lambda": {
+      "//": {
+        "metadata": {
+          "path": "oslash/lambda",
+          "uniqueId": "lambda"
+        }
+      },
+      "dynamodb_table_arn": "${aws_dynamodb_table.Hello.arn}",
+      "endpoint": "${aws_opensearch_domain.opensearch.endpoint}",
+      "source": "./assets/local-module-lambda/7782413F112F9C1AAEA0E2996081AF9C",
+      "table_name": [
+        "${aws_dynamodb_table.Hello.name}"
+      ]
+    }
+  },
+  "output": {
+    "table_name": {
+      "value": "${aws_dynamodb_table.Hello.name}"
+    }
+  },
+  "provider": {
+    "aws": [
+      {
+        "region": "us-east-1"
+      }
+    ]
+  },
+  "resource": {
+    "aws_dynamodb_table": {
+      "Hello": {
+        "//": {
+          "metadata": {
+            "path": "oslash/Hello",
+            "uniqueId": "Hello"
+          }
+        },
+        "attribute": [
+          {
+            "name": "id",
+            "type": "S"
+          }
+        ],
+        "billing_mode": "PAY_PER_REQUEST",
+        "hash_key": "id",
+        "lifecycle": {
+          "create_before_destroy": true
+        },
+        "name": "oslash"
+      }
+    },
+    "aws_opensearch_domain": {
+      "opensearch": {
+        "//": {
+          "metadata": {
+            "path": "oslash/opensearch",
+            "uniqueId": "opensearch"
+          }
+        },
+        "access_policies": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"es:*\",\"Principal\":\"*\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.identity.account_id}:domain/\\\"oslash-domain\\\"/*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":[\"66.193.100.22/32\"]}}}]}",
+        "advanced_security_options": {
+          "enabled": true,
+          "internal_user_database_enabled": true,
+          "master_user_options": {
+            "master_user_name": "venkat",
+            "master_user_password": "EBecsSer1$1"
+          }
+        },
+        "cluster_config": {
+          "instance_type": "r4.large.search"
+        },
+        "domain_endpoint_options": {
+          "enforce_https": true,
+          "tls_security_policy": "Policy-Min-TLS-1-2-2019-07"
+        },
+        "domain_name": "oslash",
+        "ebs_options": {
+          "ebs_enabled": true,
+          "volume_size": 10
+        },
+        "encrypt_at_rest": {
+          "enabled": true
+        },
+        "engine_version": "Elasticsearch_7.10",
+        "node_to_node_encryption": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "terraform": {
+    "cloud": {
+      "hostname": "app.terraform.io",
+      "organization": "venkataraj",
+      "workspaces": {
+        "name": "oslash"
+      }
+    },
+    "required_providers": {
+      "aws": {
+        "source": "aws",
+        "version": "4.39.0"
+      }
+    }
+  }
+}
